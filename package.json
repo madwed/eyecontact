@@ -1,0 +1,16 @@
+{
+  "name": "eyeoh",
+  "version": "1.0.0",
+  "description": "Eye based video contact",
+  "main": "server/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./server/app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.3",
+    "morgan": "^1.6.1"
+  }
+}
