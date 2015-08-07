@@ -12,77 +12,76 @@ var smoother = new Smoother([0.9999999, 0.9999999, 0.999, 0.999], [0, 0, 0, 0]),
 var socket = io();  
 var peer, conn, myId;
 
-function httpRequest (url, cb) {
+function httpGet (url, cb) {
 	var xmlhttp = new XMLHttpRequest();
-	xmlhttp.onreadystatechange = function () {
+	xmlhttp.onreadystatechange = function (res) {
 		if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-			cb();
+			cb(JSON.parse(this.response));
 		}
 	}
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
 }
-
-
-
-
-socket.on('env', function (env) {  
-			if (env === 'production'){
-				peer = new Peer({
-					host:'/', 
-					secure:true, 
-					port:443, 
-					key: 'peerjs', 
-					path: '/api', 
-					config: {
-						'iceServers': [{ url: 'stun:stun.l.google.com:19302' }]
-					}
-				});
-			} else {
-				peer = new Peer({host: 'localhost', port: 3000, path: '/api', debug: 2});
+ 
+function findFriend (env) {
+	console.log("env", env);
+	if (env === "production"){
+		peer = new Peer({
+			host: "/", 
+			secure: true, 
+			port: 443, 
+			key: "peerjs", 
+			path: "/api", 
+			config: {
+				"iceServers": [{ url: "stun:stun.l.google.com:19302" }]
 			}
-			peer.on("open", function (id) {
-				console.log("my id: ", id)
-				myId = id;
-			});
-			peer.on("connection", function (pconn) {
-				connectionLogic(pconn);
-			})
-
-			socket.on("hold", function(){
-				console.log("Waiting for a new friend");
-			});
-			socket.on("meet", function (peerid) {
-				console.log(peerid, localStream)
-				var call = peer.call(peerid, localStream);
-				// connectionLogic(peer.connect(peerid));
-				console.log(call);
-					call.on('stream', function(remoteStream) {
-					// `stream` is the MediaStream of the remote peer.
-					// Here you'd add it to an HTML video/canvas element.
-						initiateEyeHole(remoteCanvas, remoteCtx, remoteVideo, remoteStream);
-					});
-				
-			});
-
-			peer.on('call', function(call) {
-				// Answer the call, providing our mediaStream
-				call.answer(localStream);
-
-				call.on('stream', function(remoteStream) {
-				// `stream` is the MediaStream of the remote peer.
-				// Here you'd add it to an HTML video/canvas element.
-					initiateEyeHole(remoteCanvas, remoteCtx, remoteVideo, remoteStream);
-				});
-			});
-			
 		});
+	} else {
+		peer = new Peer({host: "localhost", port: 3000, path: "/api", debug: 2});
+	}
+	peer.on("open", function (id) {
+		console.log("my id: ", id)
+		myId = id;
+		httpGet("/" + id, meetFriend)
+	});
+	peer.on("connection", function (pconn) {
+		connectionLogic(pconn);
+	})
+
+	function meetFriend (res){
+		if(res.meet === "hold"){
+			console.log("Waiting for a new friend");
+		}else{
+			console.log("Meet ", res.meet);
+			var call = peer.call(res.meet, localStream);
+			// connectionLogic(peer.connect(peerid));
+			console.log(call);
+			call.on("stream", function(remoteStream) {
+				// `stream` is the MediaStream of the remote peer.
+				// Here you"d add it to an HTML video/canvas element.
+				initiateEyeHole(remoteCanvas, remoteCtx, remoteVideo, remoteStream);
+			});
+		}
+	}
+
+	peer.on("call", function(call) {
+		// Answer the call, providing our mediaStream
+		call.answer(localStream);
+
+		call.on("stream", function(remoteStream) {
+			// `stream` is the MediaStream of the remote peer.
+			// Here you"d add it to an HTML video/canvas element.
+			initiateEyeHole(remoteCanvas, remoteCtx, remoteVideo, remoteStream);
+		});
+	});
+}
+			
 
 
 try {
 	compatibility.getUserMedia({video: true}, function(stream) {
 		localStream = stream;
-		socket.emit("connectme", myId);
+		httpGet("/env", findFriend);
 		initiateEyeHole(localCanvas, localCtx, localVideo, localStream);
 	}, function (error) {
 		console.log(error);
@@ -151,7 +150,7 @@ function play (canvas, context, video) {
 // function connectionLogic (pconn) {
 // 	liveConn = true;
 // 	conn = pconn;
-// 	pconn.on('open', function() {
+// 	pconn.on("open", function() {
 // 		// Receive messages
 // 		pconn.on('data', function(data) {
 // 			// console.log(data);

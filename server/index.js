@@ -24,6 +24,7 @@ app.use("/api", ExpressPeerServer(server, options));
 var ids = [];
 
 app.get("/env", function (req, res) {
+  console.log(process.env.NODE_ENV);
   res.json({env: process.env.NODE_ENV});
 });
 
