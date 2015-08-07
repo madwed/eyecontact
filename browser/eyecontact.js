@@ -149,9 +149,8 @@ function enterTheEye (env) {
 	console.log("env", env);
 	if (env === "production"){
 		identity.peer = new Peer({
-			host: "/", 
-			secure: true, 
-			port: 443, 
+			host: "/",
+			port: 8080, 
 			key: "peerjs", 
 			path: "/api", 
 			config: {
