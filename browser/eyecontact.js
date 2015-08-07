@@ -5,6 +5,7 @@ var smoother = new Smoother([0.9999999, 0.9999999, 0.999, 0.999], [0, 0, 0, 0]),
 	localVideo = document.getElementById("localVideo"),
 	localCanvas = document.getElementById("localCanvas"),
 	remoteCanvas = document.getElementById("remoteCanvas"),
+	nextButton = document.getElementById("next"),
 	localCtx = localCanvas.getContext("2d"),
 	remoteCtx = remoteCanvas.getContext("2d"),
 	detector, localStream, middle;
@@ -170,6 +171,19 @@ function enterTheEye (res) {
 		peerDataCommunication(peerconn);
 	})
 
+}
+
+next.onclick = function () {
+	if(identity.myId){
+		if(liveConn){
+			liveConn = false;
+			identity.conn.close()
+			identity.conn = undefined;
+			httpGet("/meet/" + identity.myId, meetSomeone);
+		}else{
+			httpGet("/meet/" + identity.myId, meetSomeone);
+		}
+	}
 }
 		
 try {
