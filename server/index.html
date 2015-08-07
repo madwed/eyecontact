@@ -4,13 +4,24 @@
 	<title>Connect</title>
 </head>
 <body>	
-	<video id="video" width="640" height="480" autoplay></video>
-	<canvas id="canvas" width="640" height="480"></canvas>
+
+<div id="container">
+	<label>local</label>
+	<video id="localVideo" autoplay></video>
+	<canvas id="localCanvas"></canvas>
+	<label>remote</label>
+	<video id="remoteVideo" autoplay></video>
+	<canvas id="remoteCanvas" autoplay></canvas>
+</div>
+
 	<script src="/lib/socket.io.js"></script>
+	<script src="/lib/peerjs/peer.min.js"></script>
+	<script src="/lib/adapter.js"></script>
 	<script src="/lib/compatibility.js"></script>
 	<script src="/lib/smoother.js"></script>
 	<script src="/lib/jsDetectObject/objectdetect.js"></script>
 	<script src="/lib/jsDetectObject/objectdetect.frontalface.js"></script>
-	<script type="text/javascript" src="/web.js"></script>
+	<!-- <script type="text/javascript" src="/web.js"></script> -->
+	<script type="text/javascript" src="/peerTest.js"></script>
 </body>
 </html>
