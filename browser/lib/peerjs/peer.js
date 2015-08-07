@@ -1203,7 +1203,7 @@ var EventEmitter = require('eventemitter3');
  * possible connection for peers.
  */
 function Socket(secure, host, port, path, key) {
-  if (!(this instanceof Socket)) return new Socket(secure, host, port, path, key);
+  if (!(this instanceof Socket)) return new Socket(secure, host, 8000, path, key);
 
   EventEmitter.call(this);
 
@@ -1213,8 +1213,8 @@ function Socket(secure, host, port, path, key) {
 
   var httpProtocol = secure ? 'https://' : 'http://';
   var wsProtocol = secure ? 'wss://' : 'ws://';
-  this._httpUrl = httpProtocol + host + ':' + port + path + key;
-  this._wsUrl = wsProtocol + host + ':' + port + path + 'peerjs?key=' + key;
+  this._httpUrl = httpProtocol + host + ':' + 80 + path + key;
+  this._wsUrl = wsProtocol + host + ':' + 8000 + path + 'peerjs?key=' + key;
 }
 
 util.inherits(Socket, EventEmitter);
