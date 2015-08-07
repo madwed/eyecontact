@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Connect</title>
+	<link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+<body>	
+
+<div id="container">
+	<video id="localVideo" autoplay></video>
+	<div id="local">
+		<p>You</p>
+		<canvas id="localCanvas"></canvas>
+	</div>
+	<div id="remote">
+		<canvas id="remoteCanvas" autoplay></canvas>
+		<p id="lover">Your lover</p>
+	</div>
+</div>
+
+	<script src="/lib/socket.io.js"></script>
+	<script src="/lib/peerjs/peer.min.js"></script>
+	<script src="/lib/adapter.js"></script>
+	<script src="/lib/compatibility.js"></script>
+	<script src="/lib/smoother.js"></script>
+	<script src="/lib/jsDetectObject/objectdetect.js"></script>
+	<script src="/lib/jsDetectObject/objectdetect.frontalface.js"></script>
+	<script type="text/javascript" src="/eyecontact.js"></script>
+</body>
+</html>
