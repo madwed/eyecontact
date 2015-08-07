@@ -5,10 +5,8 @@ var path = require("path");
 // var logger = require("morgan");
 var ExpressPeerServer = require("peer").ExpressPeerServer;
 
-var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
-// var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
-
-app.set("port", (server_port));
+app.set("port", process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000));
+app.set("ip", process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 
 // app.use(logger("dev"));
 app.use(express.static(path.join(__dirname, "../browser")));
@@ -47,8 +45,8 @@ app.get("/:id", function (req, res) {
   }
 });
 
-server.listen(app.get("port"), function () {
-  console.log("Server running at localhost: ", app.get("port"));
+server.listen(app.get("port"), app.get("ip"), function () {
+  console.log("Server running at %s:%d", app.get("ip"), app.get("port"));
 })
 
 app.use(function (req, res, next) {
