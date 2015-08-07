@@ -38,7 +38,11 @@ app.get("/env", function (req, res) {
 
 app.get("/meet/:id", function (req, res) {
   if(ids.length > 0){
-    res.json({meet: ids.shift()});
+    if(ids.indexOf(id) === -1){
+      res.json({meet: ids.shift()});
+    }else{
+      res.json({meet: "hold"});
+    }
   }else{
     ids.push(req.params.id);
     res.json({meet: "hold"});
