@@ -125,7 +125,7 @@ function peerDataCommunication (peerconn) {
 		peerconn.close();
 		identity.conn = undefined;
 		liveConn = false;
-		httpGet("/" + identity.myId, meetSomeone);
+		httpGet("/meet/" + identity.myId, meetSomeone);
 	});
 
 	//If the user closes the tab, tell the other user
@@ -163,7 +163,7 @@ function enterTheEye (res) {
 		console.log("my id: ", id);
 		identity.myId = id;
 		//Try to meet someone
-		httpGet("/" + id, meetSomeone);
+		httpGet("/meet/" + id, meetSomeone);
 	});
 	//If someone calls, you answer
 	identity.peer.on("connection", function (peerconn) {

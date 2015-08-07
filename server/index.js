@@ -36,7 +36,7 @@ app.get("/env", function (req, res) {
   res.json({env: process.env.NODE_ENV});
 });
 
-app.get("/:id", function (req, res) {
+app.get("/meet/:id", function (req, res) {
   if(ids.length > 0){
     res.json({meet: ids.shift()});
   }else{
