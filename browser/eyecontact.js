@@ -148,7 +148,7 @@ function meetSomeone (res){
 function enterTheEye (res) {
 	if (res.env === "production"){
 		identity.peer = new Peer({
-			host: "eyecontact-friendsforever.rhcloud.com",
+			host: "127.2.52.1",
 			port: 8080, 
 			key: "peerjs", 
 			path: "/api", 
