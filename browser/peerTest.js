@@ -1,76 +1,79 @@
-function play (canvas, context, video) {
-	compatibility.requestAnimationFrame(play.bind(null, canvas, context, video));
-	if (video.paused) video.play();
+var fps, fpsInterval, startTime, now, then, elapsed;
+fps = 30;
 
-	if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
+var smoother = new Smoother([0.9999999, 0.9999999, 0.999, 0.999], [0, 0, 0, 0]),
+	localVideo = document.getElementById("localVideo"),
+	localCanvas = document.getElementById("localCanvas"),
+	remoteCanvas = document.getElementById("remoteCanvas"),
+	localCtx = localCanvas.getContext("2d"),
+	remoteCtx = remoteCanvas.getContext("2d"),
+	detector, localStream, middle;
 
-		// Prepare the detector once the video dimensions are known:
+function play () {
+	compatibility.requestAnimationFrame(play);
+
+	now = Date.now();
+    elapsed = now - then;
+	if (elapsed > fpsInterval && localVideo.readyState === localVideo.HAVE_ENOUGH_DATA && localVideo.videoWidth > 0) {
+		then = now - (elapsed % fpsInterval);
+		// Prepare the detector once the localVideo dimensions are known:
 		if (!detector) {
-			var width = ~~(60 * video.videoWidth / video.videoHeight);
+			var width = ~~(60 * localVideo.videoWidth / localVideo.videoHeight);
 			var height = 60;
 			detector = new objectdetect.detector(width, height, 1.1, objectdetect.frontalface);
-			canvas.width = video.videoWidth;
-			canvas.style.width = video.videoWidth;
-			canvas.height = video.videoHeight;
-			canvas.style.height = video.videoHeight;
+			localCanvas.width = remoteCanvas.width = localVideo.videoWidth;
+			localCanvas.style.width = remoteCanvas.style.width = localVideo.videoWidth;
+			localCanvas.height = remoteCanvas.height = localVideo.videoHeight / 2;
+			localCanvas.style.height = remoteCanvas.style.height = localVideo.videoHeight / 2,
+			middle = localCanvas.width / 2;
 		}
 
 		// Perform the actual detection:
-		var coords = detector.detect(video, 1);
+		var coords = detector.detect(localVideo, 1);
 		if (coords[0]) {
-			context.clearRect(0, 0, canvas.width, canvas.height);
+			localCtx.clearRect(0, 0, localCanvas.width, localCanvas.height);
 			var coord = coords[0];
 			coord = smoother.smooth(coord);
 
-			// Rescale coordinates from detector to video coordinate space:
-			coord[0] *= video.videoWidth / detector.canvas.width;
-			coord[1] *= video.videoHeight / detector.canvas.height;
-			coord[2] *= video.videoWidth / detector.canvas.width;
-			coord[3] *= video.videoHeight / detector.canvas.height;
+			// Rescale coordinates from detector to localVideo coordinate space:
+			coord[0] *= localVideo.videoWidth / detector.canvas.width;
+			coord[1] *= localVideo.videoHeight / detector.canvas.height;
+			coord[2] *= localVideo.videoWidth / detector.canvas.width;
+			coord[3] *= localVideo.videoHeight / detector.canvas.height;
 
-			// context.fillRect(coord[0], coord[1], coord[2], ~~(coord[3] * 6/8));
-			var eyePosX = coord[0] + coord[2] / 8;
-			var eyePosY = coord[1] + coord[3] / 4;
-			var eyeWidth = coord[2] * 3 / 4;
-			var eyeHeight = coord[3] / 5; 
-			var middle = canvas.width / 2 - eyeWidth / 2;
-			context.drawImage(video, eyePosX, eyePosY, eyeWidth, eyeHeight, middle, 0, eyeWidth, eyeHeight);
-			// vvv sending less data than video
+			var eyePosX = Math.floor(coord[0] + coord[2] / 8);
+			var eyePosY = Math.floor(coord[1] + coord[3] / 4);
+			var eyeWidth = Math.floor(coord[2] * 3 / 4);
+			var eyeHeight = Math.floor(coord[3] / 4); 
+			var middleoffset = Math.floor(middle - eyeWidth / 2);
+			localCtx.drawImage(localVideo, eyePosX, eyePosY, eyeWidth, eyeHeight, middleoffset, 0, eyeWidth, eyeHeight);
+			
 			if(liveConn){
-				//sending string
-				conn.send({data: btoa(String.fromCharCode.apply(null, context.getImageData(middle, 0, eyeWidth, eyeHeight).data)), height: eyeHeight, width: eyeWidth});
+				identity.conn.send({data: localCtx.getImageData(middleoffset, 0, eyeWidth, eyeHeight).data, height: eyeHeight, width: eyeWidth});
 			}
 		}
 	}
 }
 
-function initiateEyeHole (canvas, context, video, stream) {
+function initiateEyeHole (stream) {
 	try {
-		video.src = compatibility.URL.createObjectURL(stream);
+		localVideo.src = compatibility.URL.createObjectURL(stream);
 	} catch (error) {
-		video.src = stream;
+		localVideo.src = stream;
 	}
-
-	compatibility.requestAnimationFrame(play.bind(null, canvas, context, video));
+	fpsInterval = 1000 / fps;
+    then = Date.now();
+    startTime = then;
+	compatibility.requestAnimationFrame(play);
 }
-
 
 var liveConn = false;
 
-var smoother = new Smoother([0.9999999, 0.9999999, 0.999, 0.999], [0, 0, 0, 0]),
-	localVideo = document.getElementById("localVideo"),
-	remoteVideo = document.getElementById("remoteVideo"),
-	localCanvas = document.getElementById("localCanvas"),
-	remoteCanvas = document.getElementById("remoteCanvas"),
-	localCtx = localCanvas.getContext("2d"),
-	remoteCtx = remoteCanvas.getContext("2d"),
-	detector, localStream;
-
-var peer, conn, myId;
+var identity = {myId: undefined, peer: undefined, conn: undefined}
 
 function httpGet (url, cb) {
 	var xmlhttp = new XMLHttpRequest();
-	xmlhttp.onreadystatechange = function (res) {
+	xmlhttp.onreadystatechange = function () {
 		if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 			cb(JSON.parse(this.response));
 		}
@@ -79,37 +82,49 @@ function httpGet (url, cb) {
 	xmlhttp.send();
 }
 
-function peerVideoCommunication (call) {
-	call.on("stream", function(remoteStream) {
-		initiateEyeHole(remoteCanvas, remoteCtx, remoteVideo, remoteStream);
-	});
-}	
-
 function peerDataCommunication (peerconn) {
 	liveConn = true;
-	conn = peerconn;
+	identity.conn = peerconn;
 	peerconn.on("open", function() {
 		// Receive messages
 		peerconn.on('data', function(data) {
-			if(typeof data.data === "string") {
-				var remoteIData = remoteCtx.createImageData(data.width, data.height);
-				var incomingData = new Uint8ClampedArray(atob(data.data).split('').map(function (e) {return e.charCodeAt(0); }));
-
+			if(data.height > 0){
+				remoteCtx.clearRect(0, 0, remoteCanvas.width, remoteCanvas.height);
+				var remoteIData = remoteCtx.createImageData(data.width, data.height),
+					incomingData = new Uint8Array(data.data);
 				for(var i = 0; i < remoteIData.data.length; i++){
 					remoteIData.data[i] = incomingData[i];
-					// console.log(remoteIData.data[i], incomingData[i])
 				}
-				// console.log(remoteIData);
-				remoteCtx.putImageData(remoteIData, 0, 0);
+				var middleoffset = Math.floor(middle - data.width / 2);
+				remoteCtx.putImageData(remoteIData, middleoffset, 0);
+				remoteIData = null;
+				incomingData = null;
 			}
 		});
 	});
+
+	peerconn.on("close", function(){
+		console.log("closing connection");
+		peerconn.close();
+		liveConn = false;
+		httpGet("/" + identity.myId, meetFriend);
+	});
+
 }
+
+function meetFriend (res){
+		if(res.meet === "hold"){
+			console.log("Waiting for a new friend");
+		}else{
+			console.log("Meet ", res.meet);
+			peerDataCommunication(identity.peer.connect(res.meet));
+		}
+	}
  
-function findFriend (env) {
+function enterTheEye (env) {
 	console.log("env", env);
 	if (env === "production"){
-		peer = new Peer({
+		identity.peer = new Peer({
 			host: "/", 
 			secure: true, 
 			port: 443, 
@@ -120,44 +135,32 @@ function findFriend (env) {
 			}
 		});
 	} else {
-		peer = new Peer({host: "192.168.2.132", port: 3000, path: "/api", debug: 2});
+		identity.peer = new Peer({host: "192.168.2.132", port: 3000, path: "/api", debug: 2});
 	}
 
-	function meetFriend (res){
-		if(res.meet === "hold"){
-			console.log("Waiting for a new friend");
-		}else{
-			console.log("Meet ", res.meet);
-			// var call = peer.call(res.meet, localStream);
-			peerDataCommunication(peer.connect(res.meet));
-			// console.log(call);
-			// peerVideoCommunication(call);
-		}
-	}
-
-	peer.on("open", function (id) {
-		console.log("my id: ", id)
-		myId = id;
+	identity.peer.on("open", function (id) {
+		console.log("my id: ", id);
+		identity.myId = id;
 		httpGet("/" + id, meetFriend);
 	});
-	peer.on("connection", function (peerconn) {
+	identity.peer.on("connection", function (peerconn) {
 		peerDataCommunication(peerconn);
 	})
 
-	peer.on("call", function(call) {
-		call.answer(localStream);
-		peerVideoCommunication(call);
-	});
 }
 		
-
-
-
 try {
-	compatibility.getUserMedia({video: true}, function(stream) {
+	compatibility.getUserMedia({
+		video: {
+			mandatory: {
+				maxFrameRate: 20,
+				maxWidth: 640
+			}
+		}
+	}, function(stream) {
 		localStream = stream;
-		httpGet("/env", findFriend);
-		initiateEyeHole(localCanvas, localCtx, localVideo, localStream);
+		httpGet("/env", enterTheEye);
+		initiateEyeHole(localStream);
 	}, function (error) {
 		console.log(error);
 		alert("WebRTC not available");

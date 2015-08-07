@@ -2,16 +2,20 @@
 <html>
 <head>
 	<title>Connect</title>
+	<link rel="stylesheet" type="text/css" href="stylesheet.css">
 </head>
 <body>	
 
 <div id="container">
-	<label>local</label>
-	<video id="localVideo" style="display: none;" autoplay></video>
-	<canvas id="localCanvas"></canvas>
-	<label>remote</label>
-	<video id="remoteVideo" style="display: none;" autoplay></video>
-	<canvas id="remoteCanvas" width="800px" height="800px" style="border: 1px solid red" autoplay></canvas>
+	<video id="localVideo" autoplay></video>
+	<div id="local">
+		<p>You</p>
+		<canvas id="localCanvas"></canvas>
+	</div>
+	<div id="remote">
+		<canvas id="remoteCanvas" autoplay></canvas>
+		<p id="lover">Your lover</p>
+	</div>
 </div>
 
 	<script src="/lib/socket.io.js"></script>
