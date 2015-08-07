@@ -12,12 +12,21 @@ var smoother = new Smoother([0.9999999, 0.9999999, 0.999, 0.999], [0, 0, 0, 0]),
 var socket = io();  
 var peer, conn, myId;
 
-try {
-	console.log("try");
-	compatibility.getUserMedia({video: true}, function(stream) {
-		localStream = stream;
-		console.log(socket)
-		socket.on('env', function (env) {  
+function httpRequest (url, cb) {
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function () {
+		if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+			cb();
+		}
+	}
+	xmlhttp.open("GET", url, true);
+	xmlhttp.send();
+}
+
+
+
+
+socket.on('env', function (env) {  
 			if (env === 'production'){
 				peer = new Peer({
 					host:'/', 
@@ -35,7 +44,6 @@ try {
 			peer.on("open", function (id) {
 				console.log("my id: ", id)
 				myId = id;
-				socket.emit("connectme", id);
 			});
 			peer.on("connection", function (pconn) {
 				connectionLogic(pconn);
@@ -71,9 +79,10 @@ try {
 		});
 
 
-
-		console.log("try again");
-
+try {
+	compatibility.getUserMedia({video: true}, function(stream) {
+		localStream = stream;
+		socket.emit("connectme", myId);
 		initiateEyeHole(localCanvas, localCtx, localVideo, localStream);
 	}, function (error) {
 		console.log(error);
