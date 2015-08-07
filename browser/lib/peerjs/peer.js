@@ -1202,8 +1202,9 @@ var EventEmitter = require('eventemitter3');
  * An abstraction on top of WebSockets and XHR streaming to provide fastest
  * possible connection for peers.
  */
+ //IMADWED changed path to 8000
 function Socket(secure, host, port, path, key) {
-  if (!(this instanceof Socket)) return new Socket(secure, host, 8000, path, key);
+  if (!(this instanceof Socket)) return new Socket(secure, host, port, path, key);
 
   EventEmitter.call(this);
 
@@ -1213,7 +1214,7 @@ function Socket(secure, host, port, path, key) {
 
   var httpProtocol = secure ? 'https://' : 'http://';
   var wsProtocol = secure ? 'wss://' : 'ws://';
-  this._httpUrl = httpProtocol + host + ':' + 80 + path + key;
+  this._httpUrl = httpProtocol + host + ':' + port + path + key;
   this._wsUrl = wsProtocol + host + ':' + 8000 + path + 'peerjs?key=' + key;
 }
 
