@@ -1,14 +1,13 @@
 var express = require("express");
 var app = express();
 var server = require("http").Server(app);
-var io = require("socket.io")(server);
-var path = require("path"),
-  logger = require("morgan");
+var path = require("path");
+// var logger = require("morgan");
 var ExpressPeerServer = require("peer").ExpressPeerServer;
 
 app.set("port", (process.env.PORT || 3000));
 
-app.use(logger("dev"));
+// app.use(logger("dev"));
 app.use(express.static(path.join(__dirname, "../browser")));
 
 app.get("/", function(req, res, next) { 
