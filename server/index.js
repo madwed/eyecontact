@@ -18,13 +18,21 @@ app.get("/", function(req, res, next) {
 var options = {
     debug: true
 }
-
-app.use("/api", ExpressPeerServer(server, options));
+var peerServer = ExpressPeerServer(server, options);
 
 var ids = [];
 
+peerServer.on("disconnect", function (id) {
+  var placeInLine = ids.indexOf(id);
+  if(placeInLine !== -1){
+    ids.splice(placeInLine, 1);
+  }
+});
+
+app.use("/api", peerServer);
+
 app.get("/env", function (req, res) {
-  console.log(process.env.NODE_ENV);
+  console.log("env", process.env.NODE_ENV);
   res.json({env: process.env.NODE_ENV});
 });
 
@@ -36,24 +44,6 @@ app.get("/:id", function (req, res) {
     res.json({meet: "hold"});
   }
 });
-
-// var waitingUser;
-// var line = 0;
-
-// io.on("connection", function(socket){
-//   socket.emit("env", process.env.NODE_ENV, app.get("port"));
-//   socket.on("connectme", function(id){
-//     if (line === 1) {
-//       line = 0;
-//       socket.emit("meet", waitingUser);
-//     } else { // max two clients
-//       line = 1;
-//       waitingUser = id;
-//       socket.emit("hold");
-//     }
-//   })
-
-// });
 
 server.listen(app.get("port"), function () {
   console.log("Server running at localhost: ", app.get("port"));
