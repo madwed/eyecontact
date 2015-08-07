@@ -37,8 +37,8 @@ function play (canvas, context, video) {
 			context.drawImage(video, eyePosX, eyePosY, eyeWidth, eyeHeight, middle, 0, eyeWidth, eyeHeight);
 			// vvv sending less data than video
 			if(liveConn){
-				// console.log(typeof context.getImageData(middle, 0, eyeWidth, eyeHeight));
-				conn.send(canvas.toDataURL());
+				//sending string
+				conn.send({data: btoa(String.fromCharCode.apply(null, context.getImageData(middle, 0, eyeWidth, eyeHeight).data)), height: eyeHeight, width: eyeWidth});
 			}
 		}
 	}
@@ -91,14 +91,16 @@ function peerDataCommunication (peerconn) {
 	peerconn.on("open", function() {
 		// Receive messages
 		peerconn.on('data', function(data) {
-			// console.log(data);
-			if(typeof data === "string") {
-				var image = new Image();
-				image.onload = function() {
-					remoteCtx.drawImage(image, 0, 0);
-				};
-				image.src = data;
-				// remoteCtx.putImageData(data, 0, 0);
+			if(typeof data.data === "string") {
+				var remoteIData = remoteCtx.createImageData(data.width, data.height);
+				var incomingData = new Uint8ClampedArray(atob(data.data).split('').map(function (e) {return e.charCodeAt(0); }));
+
+				for(var i = 0; i < remoteIData.data.length; i++){
+					remoteIData.data[i] = incomingData[i];
+					// console.log(remoteIData.data[i], incomingData[i])
+				}
+				// console.log(remoteIData);
+				remoteCtx.putImageData(remoteIData, 0, 0);
 			}
 		});
 	});
