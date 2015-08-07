@@ -145,9 +145,8 @@ function meetSomeone (res){
 	}
 
 //Establish peer connection with server
-function enterTheEye (env) {
-	console.log("env", env);
-	if (env === "production"){
+function enterTheEye (res) {
+	if (res.env === "production"){
 		identity.peer = new Peer({
 			host: "http://eyecontact-friendsforever.rhcloud.com",
 			port: 8080, 
@@ -158,7 +157,7 @@ function enterTheEye (env) {
 			}
 		});
 	} else {
-		identity.peer = new Peer({host: "192.168.2.132", port: 3000, path: "/api", debug: 2});
+		identity.peer = new Peer({host: "localhost", port: 3000, path: "/api", debug: 2});
 	}
 	//When the peer connection is established
 	identity.peer.on("open", function (id) {
