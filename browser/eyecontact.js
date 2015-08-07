@@ -149,6 +149,7 @@ function enterTheEye (res) {
 	if (res.env === "production"){
 		identity.peer = new Peer({
 			host: "eyecontact-friendsforever.rhcloud.com",
+			port: 80,
 			path: "/api", 
 			config: {
 				"iceServers": [{ url: "stun:stun.l.google.com:19302" }]
