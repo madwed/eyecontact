@@ -2,6 +2,7 @@ var fps, fpsInterval, now, then, elapsed;
 fps = 30;
 
 var smoother = new Smoother([0.9999999, 0.9999999, 0.999, 0.999], [0, 0, 0, 0]),
+	lover = document.getElementById("lover"),
 	localVideo = document.getElementById("localVideo"),
 	localCanvas = document.getElementById("localCanvas"),
 	remoteCanvas = document.getElementById("remoteCanvas"),
@@ -113,6 +114,7 @@ function peerDataCommunication (peerconn) {
 				//Figure out where to put the incoming ImageData (centered)
 				var middleoffset = Math.floor(middle - data.width / 2);
 				//Draw their eyes
+				lover.style.top = data.height - remoteCanvas.height + "px"; 
 				remoteCtx.putImageData(remoteIData, middleoffset, 0);
 				remoteIData = null;
 				incomingData = null;

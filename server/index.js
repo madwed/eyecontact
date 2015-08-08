@@ -32,7 +32,6 @@ peerServer.on("disconnect", function (id) {
 app.use("/api", peerServer);
 
 app.get("/env", function (req, res) {
-  console.log("env", process.env.NODE_ENV);
   res.json({env: process.env.NODE_ENV});
 });
 

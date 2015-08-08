@@ -24,3 +24,7 @@
 	left: calc(50vw - 320px);
 	top: 0px;
 }
+
+#lover{
+	position: relative;
+}
