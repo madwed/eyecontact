@@ -2,13 +2,17 @@
 	display: none;
 }
 
-/*#remoteCanvas{
-	border: 1px solid black;
+#connected{
+	display: none;
+	position: relative;
+	left: calc(50vw - 320px);
 }
 
-#localCanvas{
-	border: 1px solid green;
-}*/
+#waiting{
+	display: block;
+	position: relative;
+	left: calc(50vw - 131.5px);
+}
 
 #remote, #local{
 	text-align: center;
@@ -21,7 +25,6 @@
 }
 
 #remote{
-	left: calc(50vw - 320px);
 	top: 0px;
 }
 

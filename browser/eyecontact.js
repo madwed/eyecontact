@@ -3,6 +3,8 @@ fps = 30;
 
 var smoother = new Smoother([0.9999999, 0.9999999, 0.999, 0.999], [0, 0, 0, 0]),
 	lover = document.getElementById("lover"),
+	waiting = document.getElementById("waiting"),
+	connected = document.getElementById("connected"),
 	localVideo = document.getElementById("localVideo"),
 	localCanvas = document.getElementById("localCanvas"),
 	remoteCanvas = document.getElementById("remoteCanvas"),
@@ -10,6 +12,16 @@ var smoother = new Smoother([0.9999999, 0.9999999, 0.999, 0.999], [0, 0, 0, 0]),
 	localCtx = localCanvas.getContext("2d"),
 	remoteCtx = remoteCanvas.getContext("2d"),
 	detector, localStream, middle;
+
+function loadingOn () {
+	waiting.style.display = "block";
+	connected.style.display = "none";
+}
+
+function loadingOff () {
+	waiting.style.display = "none";
+	connected.style.display = "block";
+}
 
 function play () {
 	compatibility.requestAnimationFrame(play);
@@ -100,6 +112,7 @@ function peerDataCommunication (peerconn) {
 	//When the connection opens...
 	peerconn.on("open", function() {
 		liveConn = true;
+		loadingOff();
 		//Listen for data
 		peerconn.on('data', function(data) {
 			if(data.height > 0){
@@ -130,6 +143,7 @@ function peerDataCommunication (peerconn) {
 	peerconn.on("close", function(){
 		console.log("closing connection");
 		peerconn.close();
+		loadingOn();
 		identity.conn = undefined;
 		liveConn = false;
 		httpGet("/meet/" + identity.myId, meetSomeone);
@@ -183,7 +197,8 @@ next.onclick = function () {
 	if(identity.myId){
 		if(liveConn){
 			liveConn = false;
-			identity.conn.close()
+			loadingOn();
+			identity.conn.close();
 			identity.conn = undefined;
 			httpGet("/meet/" + identity.myId, meetSomeone);
 		}else{
