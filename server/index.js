@@ -37,6 +37,7 @@ app.get("/env", function (req, res) {
 });
 
 app.get("/meet/:id", function (req, res) {
+  var id = req.params.id;
   if(ids.length > 0){
     var placeInLine = ids.indexOf(id)
     if(placeInLine !== 0){
@@ -48,7 +49,7 @@ app.get("/meet/:id", function (req, res) {
       res.json({meet: "hold"});
     }
   }else{
-    ids.push(req.params.id);
+    ids.push(id);
     res.json({meet: "hold"});
   }
 });
