@@ -104,20 +104,24 @@ function peerDataCommunication (peerconn) {
 		peerconn.on('data', function(data) {
 			if(data.height > 0){
 				//Clear the canvas
-				remoteCtx.clearRect(0, 0, remoteCanvas.width, remoteCanvas.height);
-				//Apply incoming ArrayBuffer to ImageData.data using a Uint8Array as the view
-				var remoteIData = remoteCtx.createImageData(data.width, data.height),
-					incomingData = new Uint8Array(data.data);
-				for(var i = 0; i < remoteIData.data.length; i++){
-					remoteIData.data[i] = incomingData[i];
+				try{
+					remoteCtx.clearRect(0, 0, remoteCanvas.width, remoteCanvas.height);
+					//Apply incoming ArrayBuffer to ImageData.data using a Uint8Array as the view
+					var remoteIData = remoteCtx.createImageData(data.width, data.height),
+						incomingData = new Uint8Array(data.data);
+					for(var i = 0; i < remoteIData.data.length; i++){
+						remoteIData.data[i] = incomingData[i];
+					}
+					//Figure out where to put the incoming ImageData (centered)
+					var middleoffset = Math.floor(middle - data.width / 2);
+					//Draw their eyes
+					lover.style.top = data.height - remoteCanvas.height + "px";
+					remoteCtx.putImageData(remoteIData, middleoffset, 0);
+					remoteIData = null;
+					incomingData = null;
+				}catch(e){
+					console.log(e);
 				}
-				//Figure out where to put the incoming ImageData (centered)
-				var middleoffset = Math.floor(middle - data.width / 2);
-				//Draw their eyes
-				lover.style.top = data.height - remoteCanvas.height + "px"; 
-				remoteCtx.putImageData(remoteIData, middleoffset, 0);
-				remoteIData = null;
-				incomingData = null;
 			}
 		});
 	});
