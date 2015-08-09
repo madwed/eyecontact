@@ -65,11 +65,17 @@ function play () {
 			var eyeHeight = Math.floor(coord[3] / 4); 
 			var middleoffset = Math.floor(middle - eyeWidth / 2);
 			//Draw the your eyes
-			localCtx.drawImage(localVideo, eyePosX, eyePosY, eyeWidth, eyeHeight, middleoffset, 0, eyeWidth, eyeHeight);
+
+			localCtx.lineWidth = 3;
+			localCtx.beginPath();
+			localCtx.rect(middleoffset - 5, 3, eyeWidth + 10, eyeHeight + 10);
+			localCtx.stroke();
+			localCtx.closePath();
+			localCtx.drawImage(localVideo, eyePosX, eyePosY, eyeWidth, eyeHeight, middleoffset, 8, eyeWidth, eyeHeight);
 			//If there's a connection
 			if(liveConn){
 				//Send them your eyes
-				identity.conn.send({data: localCtx.getImageData(middleoffset, 0, eyeWidth, eyeHeight).data, height: eyeHeight, width: eyeWidth});
+				identity.conn.send({data: localCtx.getImageData(middleoffset, 8, eyeWidth, eyeHeight + 8).data, height: eyeHeight, width: eyeWidth});
 			}
 		}
 	}
@@ -127,10 +133,16 @@ function peerDataCommunication (peerconn) {
 						remoteIData.data[i] = incomingData[i];
 					}
 					//Figure out where to put the incoming ImageData (centered)
-					var middleoffset = Math.floor(middle - data.width / 2);
+					var halfImage = data.width / 2;
+					var middleoffset = Math.floor(middle - halfImage);
 					//Draw their eyes
-					lover.style.top = data.height - remoteCanvas.height + "px";
-					remoteCtx.putImageData(remoteIData, middleoffset, 0);
+					lover.style.top = 16 + data.height - remoteCanvas.height + "px";
+					remoteCtx.lineWidth = 3;
+					remoteCtx.beginPath();
+					remoteCtx.rect(middleoffset - 5, 3, data.width + 10, data.height + 10);
+					remoteCtx.stroke();
+					remoteCtx.closePath();
+					remoteCtx.putImageData(remoteIData, middleoffset, 8);
 					remoteIData = null;
 					incomingData = null;
 				}catch(e){
