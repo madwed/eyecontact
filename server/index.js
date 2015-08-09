@@ -11,18 +11,24 @@ app.set("ip", process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 // app.use(logger("dev"));
 app.use(express.static(path.join(__dirname, "../browser")));
 
-app.get("/", function(req, res, next) { 
+app.get("/", function (req, res) { 
   res.sendFile(path.join(__dirname, "./index.html")); 
 });
 
 var options = {
-    debug: true
+    debug: process.env.NODE_ENV === "production" ? false : true
 }
 var peerServer = ExpressPeerServer(server, options);
 
 var ids = [];
+var onlineUsers = 0;
+
+peerServer.on("connection", function () {
+  onlineUsers++;
+});
 
 peerServer.on("disconnect", function (id) {
+  onlineUsers--;
   var placeInLine = ids.indexOf(id);
   if(placeInLine !== -1){
     ids.splice(placeInLine, 1);
@@ -37,20 +43,22 @@ app.get("/env", function (req, res) {
 
 app.get("/meet/:id", function (req, res) {
   var id = req.params.id;
+  var message = {users: onlineUsers};
   if(ids.length > 0){
     var placeInLine = ids.indexOf(id)
     if(placeInLine !== 0){
       if(placeInLine !== -1){
         ids.splice(placeInLine, 1);
       }
-      res.json({meet: ids.shift()});
+      message.meet = ids.shift();
     }else{
-      res.json({meet: "hold"});
+      message.meet = "hold";
     }
   }else{
     ids.push(id);
-    res.json({meet: "hold"});
+    message.meet = "hold"
   }
+  res.json(message);
 });
 
 server.listen(app.get("port"), app.get("ip"), function () {

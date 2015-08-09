@@ -3,6 +3,7 @@ fps = 30;
 
 var smoother = new Smoother([0.9999999, 0.9999999, 0.999, 0.999], [0, 0, 0, 0]),
 	lover = document.getElementById("lover"),
+	onlineUsers = document.getElementById("onlineUsers"),
 	waiting = document.getElementById("waiting"),
 	connected = document.getElementById("connected"),
 	localVideo = document.getElementById("localVideo"),
@@ -157,13 +158,14 @@ function peerDataCommunication (peerconn) {
 
 //Receive the response from the server, potentially with another user's peer id
 function meetSomeone (res){
-		if(res.meet === "hold"){
-			console.log("Waiting for a new friend");
-		}else{
-			console.log("Meet ", res.meet);
-			peerDataCommunication(identity.peer.connect(res.meet));
-		}
+	onlineUsers.innerHTML = res.users + " user(s) online";
+	if(res.meet === "hold"){
+		console.log("Waiting for a new friend");
+	}else{
+		console.log("Meet ", res.meet);
+		peerDataCommunication(identity.peer.connect(res.meet));
 	}
+}
 
 //Establish peer connection with server
 function enterTheEye (res) {
@@ -193,7 +195,7 @@ function enterTheEye (res) {
 
 }
 
-next.onclick = function () {
+nextButton.onclick = function () {
 	if(identity.myId){
 		if(liveConn){
 			liveConn = false;
