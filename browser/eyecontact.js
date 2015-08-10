@@ -122,7 +122,7 @@ function peerDataCommunication (peerconn) {
 		loadingOff();
 		//Listen for data
 		peerconn.on('data', function(data) {
-			if(data.height > 0){
+			if(data.height > 0 && data.width > 0 && isFinite(data.height) && isFinite(data.width)){
 				//Clear the canvas
 				try{
 					remoteCtx.clearRect(0, 0, remoteCanvas.width, remoteCanvas.height);
