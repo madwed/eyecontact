@@ -41,7 +41,7 @@ function play () {
 			localCanvas.width = remoteCanvas.width = localVideo.videoWidth;
 			localCanvas.style.width = remoteCanvas.style.width = localVideo.videoWidth;
 			localCanvas.height = remoteCanvas.height = localVideo.videoHeight / 2;
-			localCanvas.style.height = remoteCanvas.style.height = localVideo.videoHeight / 2,
+			localCanvas.style.height = remoteCanvas.style.height = localVideo.videoHeight / 2;
 			middle = localCanvas.width / 2;
 		}
 
@@ -98,7 +98,7 @@ function initiateEyeHole (stream) {
 //Is there a connection?
 var liveConn = false;
 //Utility object to hold the client's Id, peer reference, and current connection reference
-var identity = {myId: undefined, peer: undefined, conn: undefined}
+var identity = {myId: undefined, peer: undefined, conn: undefined};
 
 //Utility method for sending http Ajax get requests
 function httpGet (url, cb) {
@@ -107,7 +107,7 @@ function httpGet (url, cb) {
 		if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
 			cb(JSON.parse(this.response));
 		}
-	}
+	};
 	xmlhttp.open("GET", url, true);
 	xmlhttp.send();
 }
@@ -219,7 +219,7 @@ nextButton.onclick = function () {
 			httpGet("/meet/" + identity.myId, meetSomeone);
 		}
 	}
-}
+};
 		
 try {
 	//Set up the webcam
