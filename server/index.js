@@ -16,8 +16,8 @@ app.get("/", function (req, res) {
 });
 
 var options = {
-    debug: process.env.NODE_ENV === "production" ? false : true
-}
+    debug: process.env.NODE_ENV !== "production"
+};
 var peerServer = ExpressPeerServer(server, options);
 
 var ids = [];
@@ -45,7 +45,7 @@ app.get("/meet/:id", function (req, res) {
   var id = req.params.id;
   var message = {users: onlineUsers};
   if(ids.length > 0){
-    var placeInLine = ids.indexOf(id)
+    var placeInLine = ids.indexOf(id);
     if(placeInLine !== 0){
       if(placeInLine !== -1){
         ids.splice(placeInLine, 1);
@@ -63,7 +63,7 @@ app.get("/meet/:id", function (req, res) {
 
 server.listen(app.get("port"), app.get("ip"), function () {
   console.log("Server running at %s:%d", app.get("ip"), app.get("port"));
-})
+});
 
 app.use(function (req, res, next) {
     var err = new Error("Not Found");
