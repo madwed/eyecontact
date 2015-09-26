@@ -2,6 +2,8 @@ var express = require("express");
 var app = express();
 var server = require("http").Server(app);
 var path = require("path");
+var Q = require("./queue");
+var q = new Q;
 // var logger = require("morgan");
 var ExpressPeerServer = require("peer").ExpressPeerServer;
 
@@ -20,19 +22,12 @@ var options = {
 };
 var peerServer = ExpressPeerServer(server, options);
 
-var ids = [];
-var onlineUsers = 0;
-
-peerServer.on("connection", function () {
-  onlineUsers++;
+peerServer.on("connection", function (id) {
+  q.logon(id)
 });
 
 peerServer.on("disconnect", function (id) {
-  onlineUsers--;
-  var placeInLine = ids.indexOf(id);
-  if(placeInLine !== -1){
-    ids.splice(placeInLine, 1);
-  }
+  q.logout(id);
 });
 
 app.use("/api", peerServer);
@@ -43,22 +38,7 @@ app.get("/env", function (req, res) {
 
 app.get("/meet/:id", function (req, res) {
   var id = req.params.id;
-  var message = {users: onlineUsers};
-  if(ids.length > 0){
-    var placeInLine = ids.indexOf(id);
-    if(placeInLine !== 0){
-      if(placeInLine !== -1){
-        ids.splice(placeInLine, 1);
-      }
-      message.meet = ids.shift();
-    }else{
-      message.meet = "hold";
-    }
-  }else{
-    ids.push(id);
-    message.meet = "hold"
-  }
-  res.json(message);
+  res.json(q.checkin(id));
 });
 
 server.listen(app.get("port"), app.get("ip"), function () {
