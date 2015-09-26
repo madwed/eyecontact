@@ -25,7 +25,7 @@ function loadingOff() {
 }
 
 function play() {
-    compatibility.requestAnimationFrame(play);
+    requestAnimationFrame(play);
     //Keep on throttling
     now = Date.now();
     elapsed = now - then;
@@ -89,14 +89,14 @@ function initiateEyeHole(stream) {
     //Stream the localStream through a video element
     //We will be applying it to the canvas later on
     try {
-        localVideo.src = compatibility.URL.createObjectURL(stream);
+        localVideo.src = URL.createObjectURL(stream);
     } catch (error) {
         localVideo.src = stream;
     }
     //Set up the throttle on requestAnimationFrame
     fpsInterval = 1000 / fps;
     then = Date.now();
-    compatibility.requestAnimationFrame(play);
+    requestAnimationFrame(play);
 }
 
 //Is there a connection?

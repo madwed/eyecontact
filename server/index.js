@@ -23,7 +23,6 @@ var options = {
 var peerServer = ExpressPeerServer(server, options);
 
 peerServer.on("connection", function (id) {
-  console.log(id);
   q.logon(id)
 });
 
