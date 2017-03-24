@@ -17,7 +17,7 @@ app.get("/", function (req, res) {
 });
 
 var options = {
-    debug: process.env.NODE_ENV !== "production"
+  debug: process.env.NODE_ENV !== "production"
 };
 var peerServer = ExpressPeerServer(server, options);
 
@@ -43,19 +43,18 @@ app.get("/meet/:id", function (req, res) {
   res.json(q.checkin(id));
 });
 
-server.listen(app.get("port"), app.get("ip"), function () {
+server.listen(app.get("port"), function () {
   console.log("Server running on port %s", app.get("port"));
 });
 
 app.use(function (req, res, next) {
-    var err = new Error("Not Found");
-    err.status = 404;
-    next(err);
+  var err = new Error("Not Found");
+  err.status = 404;
+  next(err);
 });
 
 app.use(function (err, req, res) {
-    res.status(err.status || 500);
-    console.log({error: err});
-    res.send(err);
+  res.status(err.status || 500);
+  console.log({ error: err });
+  res.send(err);
 });
-
