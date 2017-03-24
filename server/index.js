@@ -8,7 +8,6 @@ var q = new Q;
 var ExpressPeerServer = require("peer").ExpressPeerServer;
 
 app.set("port", process.env.PORT || 3000);
-app.set("ip", process.env.IP || "127.0.0.1");
 
 // app.use(logger("dev"));
 app.use(express.static(path.join(__dirname, "../browser")));
