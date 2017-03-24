@@ -195,8 +195,7 @@ function meetSomeone(res) {
 function enterTheEye(res) {
     if (res.env === "production") {
         identity.peer = new Peer({
-            host: "https://eye-contact.herokuapp.com/",
-            port: 80,
+            host: "eye-contact.herokuapp.com",
             wsport: 80,
             path: "/api",
             config: {
