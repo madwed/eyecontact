@@ -7,14 +7,14 @@ var q = new Q;
 // var logger = require("morgan");
 var ExpressPeerServer = require("peer").ExpressPeerServer;
 
-app.set("port", process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000);
-app.set("ip", process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
+app.set("port", process.env.PORT || 3000);
+app.set("ip", process.env.IP || "127.0.0.1");
 
 // app.use(logger("dev"));
 app.use(express.static(path.join(__dirname, "../browser")));
 
-app.get("/", function (req, res) { 
-  res.sendFile(path.join(__dirname, "./index.html")); 
+app.get("/", function (req, res) {
+  res.sendFile(path.join(__dirname, "./index.html"));
 });
 
 var options = {
