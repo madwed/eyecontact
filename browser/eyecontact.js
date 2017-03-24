@@ -197,7 +197,7 @@ function enterTheEye(res) {
         identity.peer = new Peer({
             host: "eye-contact.herokuapp.com",
             port: "",
-            wsport: 80,
+            wsport: res.port,
             path: "/api",
             config: {
                 "iceServers": [{url: "stun:stun.l.google.com:19302"}]

@@ -32,7 +32,10 @@ peerServer.on("disconnect", function (id) {
 app.use("/api", peerServer);
 
 app.get("/env", function (req, res) {
-  res.json({env: process.env.NODE_ENV});
+  res.json({
+    env: process.env.NODE_ENV,
+    port: process.env.PORT,
+  });
 });
 
 app.get("/meet/:id", function (req, res) {
