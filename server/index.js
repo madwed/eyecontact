@@ -41,7 +41,7 @@ app.get("/meet/:id", function (req, res) {
 });
 
 server.listen(app.get("port"), app.get("ip"), function () {
-  console.log("Server running at %s:%d", app.get("ip"), app.get("port"));
+  console.log("Server running on port %s", app.get("port"));
 });
 
 app.use(function (req, res, next) {
