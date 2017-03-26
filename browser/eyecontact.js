@@ -168,7 +168,8 @@ function peerDataCommunication(peerconn) {
     httpGet("/meet/" + identity.myId, meetSomeone);
   });
 
-  peerconn.on("error", function () {
+  peerconn.on("error", function (error) {
+    console.log(error);
     peerconn.close();
     loadingOn();
     identity.conn = undefined;
@@ -201,6 +202,7 @@ function enterTheEye(res) {
       port: "",
       wsport: "",
       path: "/api",
+      debug: 3,
       config: {
         "iceServers": [{ url: "stun:stun.l.google.com:19302" }]
       }
@@ -210,7 +212,7 @@ function enterTheEye(res) {
       host: "localhost",
       port: 3000,
       path: "/api",
-      debug: 2,
+      debug: 3,
     });
   }
   //When the peer connection is established
