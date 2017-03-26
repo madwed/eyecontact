@@ -202,7 +202,6 @@ function enterTheEye(res) {
       port: "",
       wsport: "",
       path: "/api",
-      debug: 3,
       config: {
         "iceServers": [{ url: "stun:stun.l.google.com:19302" }]
       }
