@@ -225,6 +225,10 @@ function enterTheEye(res) {
   identity.peer.on("connection", function (peerconn) {
     peerDataCommunication(peerconn);
   });
+
+  identity.peer.on('error', function (error) {
+    console.warn(error);
+  });
 }
 
 nextButton.onclick = function () {
