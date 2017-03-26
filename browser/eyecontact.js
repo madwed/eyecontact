@@ -119,7 +119,6 @@ function httpGet(url, cb) {
 
 //When a peer DataConnection is established
 function peerDataCommunication(peerconn) {
-  console.log(peerconn);
   identity.conn = peerconn;
 
   //When the connection opens...
