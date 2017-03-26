@@ -170,11 +170,7 @@ function peerDataCommunication(peerconn) {
 
   peerconn.on("error", function (error) {
     console.log(error);
-    peerconn.close();
-    loadingOn();
-    identity.conn = undefined;
-    liveConn = false;
-    httpGet("/meet/" + identity.myId, meetSomeone);
+    forgetSomone();
   });
 
   //If the user closes the tab, tell the other user
@@ -192,6 +188,16 @@ function meetSomeone(res) {
     console.log("Meet ", res.meet);
     peerDataCommunication(identity.peer.connect(res.meet));
   }
+}
+
+function forgetSomeone() {
+  if (identity.conn) {
+    identity.conn.close();
+    identity.conn = undefined;
+  }
+  loadingOn();
+  liveConn = false;
+  httpGet("/meet/" + identity.myId, meetSomeone);
 }
 
 //Establish peer connection with server
@@ -228,6 +234,7 @@ function enterTheEye(res) {
 
   identity.peer.on('error', function (error) {
     console.warn(error);
+    forgetSomeone();
   });
 }
 
