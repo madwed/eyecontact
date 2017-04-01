@@ -4,13 +4,11 @@ var server = require("http").Server(app);
 var path = require("path");
 var Q = require("./queue");
 var q = new Q;
-// var logger = require("morgan");
 var ExpressPeerServer = require("peer").ExpressPeerServer;
 
 app.set("port", process.env.PORT || 3000);
 
-// app.use(logger("dev"));
-app.use(express.static(path.join(__dirname, "../browser")));
+app.use(express.static(path.join(__dirname, "../public")));
 
 app.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "./index.html"));
@@ -48,6 +46,7 @@ server.listen(app.get("port"), function () {
 });
 
 app.use(function (req, res, next) {
+  console.log(req.url);
   var err = new Error("Not Found");
   err.status = 404;
   next(err);

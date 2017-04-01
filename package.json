@@ -5,13 +5,20 @@
   "main": "server/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./server"
+    "start": "node ./server",
+    "build": "webpack",
+    "build:dev": "webpack --watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "adapterjs": "^0.14.1",
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
     "express": "^4.13.3",
     "morgan": "^1.6.1",
-    "peer": "^0.2.8"
+    "peer": "^0.2.8",
+    "peerjs": "github:peers/peerjs#10529b6",
+    "webpack": "^2.3.2"
   }
 }

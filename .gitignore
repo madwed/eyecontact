@@ -3,3 +3,4 @@
 **/.idea
 **/.openshift
 **/npm-debug.log
+/public/client.js
